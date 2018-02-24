@@ -7,6 +7,9 @@ public class gyroscopeClass : MonoBehaviour {
     private bool gyroEnabled;
     private Gyroscope gyroSensor;
 
+    private Quaternion initialRotation;
+    private Quaternion gyroInitialRotation;
+
     private GameObject cameraContrainer;
     private Quaternion rot;
 
@@ -15,7 +18,6 @@ public class gyroscopeClass : MonoBehaviour {
         cameraContrainer = new GameObject("Camera Container");
         cameraContrainer.transform.position = transform.position;
         transform.SetParent(cameraContrainer.transform);
-
 
         gyroEnabled = enableGyro();
 	}
@@ -27,7 +29,10 @@ public class gyroscopeClass : MonoBehaviour {
             gyroSensor = Input.gyro;
             gyroSensor.enabled = true;
 
-            cameraContrainer.transform.rotation = Quaternion.Euler(90f, 90f, 0f);
+            initialRotation = transform.rotation;
+            gyroInitialRotation = Input.gyro.attitude;
+
+            cameraContrainer.transform.rotation = Quaternion.Euler(90f, -90f, 0f);
             rot = new Quaternion(0, 0, 1, 0);
 
             return true;
@@ -40,8 +45,10 @@ public class gyroscopeClass : MonoBehaviour {
 
         if (gyroEnabled)
         {
-            transform.rotation = gyroSensor.attitude * rot;
+            transform.rotation = Quaternion.Inverse(gyroSensor.attitude) * rot;
+
         }
 
 	}
+
 }
